@@ -5,5 +5,43 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"dart.lineLength": 100,
+		"[dart]": {
+			"editor.insertSpaces": true,
+			"editor.rulers": [
+				100
+			],
+			"editor.tabSize": 2,
+		}
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Run all Tests",
+				"type": "dart",
+				"request": "launch",
+				"program": "./test/"
+			},
+			{
+				"name": "Run Debug",
+				"request": "launch",
+				"type": "dart",
+				"flutterMode": "debug"
+			},
+			{
+				"name": "Run Profile",
+				"request": "launch",
+				"type": "dart",
+				"flutterMode": "profile"
+			},
+			{
+				"name": "Run Release",
+				"request": "launch",
+				"type": "dart",
+				"flutterMode": "release"
+			}
+		]
+	}
 }
