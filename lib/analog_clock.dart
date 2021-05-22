@@ -36,7 +36,10 @@ class _AnalogClockState extends State<AnalogClock> {
 class AnalogClockFace extends StatelessWidget {
   final DateTime timestamp;
 
-  const AnalogClockFace({Key? key, required this.timestamp}) : super(key: key);
+  const AnalogClockFace({
+    Key? key,
+    required this.timestamp,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,22 +55,28 @@ class AnalogClockFace extends StatelessWidget {
             // Hour Hand
             Transform.rotate(
               angle: hoursToRadians(hours),
-              child: Container(
-                color: Colors.red,
+              child: Image.asset(
+                'assets/images/hour.png',
+                color: Theme.of(context).colorScheme.onSurface,
+                colorBlendMode: BlendMode.srcIn,
               ),
             ),
             // Minute Hand
             Transform.rotate(
               angle: minutesSecondsToRadians(minutes),
-              child: Container(
-                color: Colors.blue,
+              child: Image.asset(
+                'assets/images/minute.png',
+                color: Theme.of(context).colorScheme.onSurface.withBlue(128),
+                colorBlendMode: BlendMode.srcIn,
               ),
             ),
             // Second Hand
             Transform.rotate(
               angle: minutesSecondsToRadians(seconds),
-              child: Container(
-                color: Colors.green,
+              child: Image.asset(
+                'assets/images/second.png',
+                color: Colors.red,
+                colorBlendMode: BlendMode.srcIn,
               ),
             ),
           ],
