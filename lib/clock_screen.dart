@@ -28,8 +28,11 @@ class _ClockScreenState extends State<ClockScreen> {
             )
           ],
         ),
-        body: Center(
-          child: _analog ? AnalogClock() : DigitalClock(),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: _analog ? AnalogClock() : DigitalClock(),
+          ),
         ),
       );
 }
