@@ -25,3 +25,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/hour.png
+    - assets/images/minute.png
+    - assets/images/second.png
