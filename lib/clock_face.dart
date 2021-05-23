@@ -1,14 +1,24 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class AnalogClock extends StatefulWidget {
+class ClockFace extends StatefulWidget {
+  final bool analog;
+
+  const ClockFace({
+    Key? key,
+    required this.analog,
+  }) : super(key: key);
+
   @override
-  _AnalogClockState createState() => _AnalogClockState();
+  _ClockFaceState createState() => _ClockFaceState();
 }
 
-class _AnalogClockState extends State<AnalogClock> {
+class _ClockFaceState extends State<ClockFace> {
   late Timer _timer;
   late DateTime time;
 
@@ -30,7 +40,8 @@ class _AnalogClockState extends State<AnalogClock> {
   }
 
   @override
-  Widget build(BuildContext context) => AnalogClockFace(timestamp: time);
+  Widget build(BuildContext context) =>
+      widget.analog ? AnalogClockFace(timestamp: time) : DigitalClockFace(timestamp: time);
 }
 
 class AnalogClockFace extends StatelessWidget {
@@ -92,4 +103,28 @@ class AnalogClockFace extends StatelessWidget {
   double hoursToRadians(int n) => n * pi / 6.0;
 
   double minutesSecondsToRadians(int n) => n * pi / 30.0;
+}
+
+class DigitalClockFace extends StatelessWidget {
+  static const maxFontSize = 288.0;
+
+  final DateTime timestamp;
+
+  const DigitalClockFace({
+    Key? key,
+    required this.timestamp,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => AutoSizeText(
+        DateFormat.Hms().format(timestamp),
+        maxFontSize: maxFontSize,
+        maxLines: 1,
+        style: const TextStyle(
+          fontSize: maxFontSize,
+          fontFeatures: [
+            FontFeature.tabularFigures(),
+          ],
+        ),
+      );
 }

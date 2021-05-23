@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_clock/analog_clock.dart';
-import 'package:flutter_clock/digital_clock.dart';
+import 'package:flutter_clock/clock_face.dart';
 
 /// Display the clock, and handle switching between analog and digital clocks
 class ClockScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _ClockScreenState extends State<ClockScreen> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Center(
-            child: _analog ? AnalogClock() : DigitalClock(),
+            child: ClockFace(analog: _analog),
           ),
         ),
       );
