@@ -27,7 +27,28 @@ void main() {
   });
 
   group('Analog Clock Face', () {
-    testWidgets('No Analog tests yet', (WidgetTester tester) async {});
+    testWidgets('Clock hands are displayed', (WidgetTester tester) async {
+      final midnight = DateTime(1);
+      await tester.pumpWidget(boilerplate(child: AnalogClockFace(timestamp: midnight)));
+
+      expect(find.bySemanticsLabel('Hour Hand', skipOffstage: false), findsOneWidget);
+      expect(find.bySemanticsLabel('Minute Hand', skipOffstage: false), findsOneWidget);
+      expect(find.bySemanticsLabel('Second Hand', skipOffstage: false), findsOneWidget);
+    });
+
+    testWidgets(
+      'Midnight is displayed correctly',
+      (WidgetTester tester) async {
+        final midnight = DateTime(1);
+        await tester.pumpWidget(boilerplate(child: AnalogClockFace(timestamp: midnight)));
+
+        // TODO: find the clock hands, determine their rotation, and compare with expected values
+        expect(find.bySemanticsLabel('Hour Hand'), findsOneWidget);
+        expect(find.bySemanticsLabel('Minute Hand'), findsOneWidget);
+        expect(find.bySemanticsLabel('Second Hand'), findsOneWidget);
+      },
+      skip: true,
+    );
   });
 
   group('Digital Clock Face', () {

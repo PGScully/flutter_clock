@@ -44,6 +44,29 @@ class _ClockFaceState extends State<ClockFace> {
       widget.analog ? AnalogClockFace(timestamp: time) : DigitalClockFace(timestamp: time);
 }
 
+// Only load these once
+late final hourHand = Image.asset(
+  'assets/images/hour.png',
+  fit: BoxFit.contain,
+  color: Colors.blue,
+  colorBlendMode: BlendMode.srcIn,
+  semanticLabel: 'Hour Hand',
+);
+late final minuteHand = Image.asset(
+  'assets/images/minute.png',
+  fit: BoxFit.contain,
+  color: Colors.green,
+  colorBlendMode: BlendMode.srcIn,
+  semanticLabel: 'Minute Hand',
+);
+late final secondHand = Image.asset(
+  'assets/images/second.png',
+  fit: BoxFit.contain,
+  color: Colors.red,
+  colorBlendMode: BlendMode.srcIn,
+  semanticLabel: 'Second Hand',
+);
+
 class AnalogClockFace extends StatelessWidget {
   final DateTime timestamp;
 
@@ -67,32 +90,17 @@ class AnalogClockFace extends StatelessWidget {
             // Hour Hand
             Transform.rotate(
               angle: hoursToRadians(hours),
-              child: Image.asset(
-                'assets/images/hour.png',
-                fit: BoxFit.contain,
-                color: Theme.of(context).colorScheme.onSurface,
-                colorBlendMode: BlendMode.srcIn,
-              ),
+              child: hourHand,
             ),
             // Minute Hand
             Transform.rotate(
               angle: minutesSecondsToRadians(minutes),
-              child: Image.asset(
-                'assets/images/minute.png',
-                fit: BoxFit.contain,
-                color: Theme.of(context).colorScheme.onSurface.withBlue(128),
-                colorBlendMode: BlendMode.srcIn,
-              ),
+              child: minuteHand,
             ),
             // Second Hand
             Transform.rotate(
               angle: minutesSecondsToRadians(seconds),
-              child: Image.asset(
-                'assets/images/second.png',
-                fit: BoxFit.contain,
-                color: Colors.red,
-                colorBlendMode: BlendMode.srcIn,
-              ),
+              child: secondHand,
             ),
           ],
         ),
