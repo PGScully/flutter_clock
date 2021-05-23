@@ -51,12 +51,14 @@ class AnalogClockFace extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1.0,
         child: Stack(
+          fit: StackFit.expand,
           children: [
             // Hour Hand
             Transform.rotate(
               angle: hoursToRadians(hours),
               child: Image.asset(
                 'assets/images/hour.png',
+                fit: BoxFit.contain,
                 color: Theme.of(context).colorScheme.onSurface,
                 colorBlendMode: BlendMode.srcIn,
               ),
@@ -66,6 +68,7 @@ class AnalogClockFace extends StatelessWidget {
               angle: minutesSecondsToRadians(minutes),
               child: Image.asset(
                 'assets/images/minute.png',
+                fit: BoxFit.contain,
                 color: Theme.of(context).colorScheme.onSurface.withBlue(128),
                 colorBlendMode: BlendMode.srcIn,
               ),
@@ -75,6 +78,7 @@ class AnalogClockFace extends StatelessWidget {
               angle: minutesSecondsToRadians(seconds),
               child: Image.asset(
                 'assets/images/second.png',
+                fit: BoxFit.contain,
                 color: Colors.red,
                 colorBlendMode: BlendMode.srcIn,
               ),
