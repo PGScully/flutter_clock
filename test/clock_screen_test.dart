@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_clock/clock_face.dart';
@@ -8,7 +9,7 @@ void main() {
   group('Clock screen', () {
     testWidgets('toggle analog/digital face', (WidgetTester tester) async {
       // Build our app and trigger a frame.
-      await tester.pumpWidget(boilerplate(child: const ClockScreen()));
+      await tester.pumpWidget(boilerplate(child: ClockScreen()));
 
       // Verify that Digital Clock is shown.
       expect(find.byType(DigitalClockFace), findsOneWidget);
@@ -21,7 +22,7 @@ void main() {
 
       // Tap the To Analog action and trigger a frame.
       await tester.tap(find.widgetWithText(ActionChip, 'To Analog'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Verify that Analog Clock is shown.
       expect(find.byType(AnalogClockFace), findsOneWidget);
@@ -48,4 +49,5 @@ void main() {
   });
 }
 
-Widget boilerplate({required Widget child}) => MaterialApp(home: Scaffold(body: child));
+Widget boilerplate({required Widget child}) =>
+    ProviderScope(child: MaterialApp(home: Scaffold(body: child)));

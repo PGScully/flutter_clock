@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_clock/clock_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -12,6 +13,6 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Clock',
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
-        home: const ClockScreen(),
+        home: ClockScreen(),
       );
 }
