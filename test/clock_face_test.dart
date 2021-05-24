@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_clock/clock_face_preference.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutter_clock/alarm_preference.dart';
+import 'package:flutter_clock/clock_face_preference.dart';
 import 'package:flutter_clock/clock_face.dart';
 
 void main() {
@@ -95,6 +97,67 @@ void main() {
       expect(find.text('9:45:55'), findsNothing);
     });
   });
+
+  group(
+    'Alarms',
+    () {
+      testWidgets(
+        'No alarm if not set',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(ProviderScope(
+            overrides: [
+              alarmProvider.overrideWithValue(AlarmPreference()..setAlarm(alarm: null)),
+              timeProvider.overrideWithProvider(
+                  StateProvider<DateTime>((ref) => DateTime(1, 1, 1, 11, 22))),
+            ],
+            child: boilerplate(child: ClockFace()),
+          ));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsNothing);
+        },
+        skip: true,
+      );
+
+      testWidgets(
+        'No alarm at wrong tme',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(ProviderScope(
+            overrides: [
+              alarmProvider
+                  .overrideWithValue(AlarmPreference()..setAlarm(alarm: DateTime(1, 1, 1, 9, 33))),
+              timeProvider.overrideWithProvider(
+                  StateProvider<DateTime>((ref) => DateTime(1, 1, 1, 11, 22))),
+            ],
+            child: boilerplate(child: ClockFace()),
+          ));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsNothing);
+        },
+        skip: true,
+      );
+
+      testWidgets('Alarm at correct time', (WidgetTester tester) async {
+        await tester.pumpWidget(ProviderScope(
+          overrides: [
+            alarmProvider.overrideWithValue(
+              AlarmPreference()..setAlarm(alarm: DateTime(1, 1, 1, 11, 22)),
+            ),
+            timeProvider.overrideWithProvider(
+              StateProvider<DateTime>((ref) => DateTime(1, 1, 1, 11, 22)),
+            ),
+          ],
+          child: boilerplate(child: ClockFace()),
+        ));
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsNothing);
+      });
+    },
+    skip: true,
+  );
 }
 
 Widget boilerplate({required Widget child}) => MaterialApp(home: Scaffold(body: child));

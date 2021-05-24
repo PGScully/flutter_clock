@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:flutter_clock/alarm_preference.dart';
 import 'package:flutter_clock/clock_face_preference.dart';
 
 class ClockFace extends StatefulWidget {
@@ -39,11 +40,45 @@ class _ClockFaceState extends State<ClockFace> {
         builder: (context, watch, _) {
           final time = watch(timeProvider).state;
           final analogPreference = watch(clockFaceProvider);
+          final alarmPreference = watch(alarmProvider);
+          _testAlarm(alarmTime: alarmPreference, currentTime: time);
+
           return analogPreference
               ? AnalogClockFace(timestamp: time)
               : DigitalClockFace(timestamp: time);
         },
       );
+
+  Future<void> _testAlarm({
+    required DateTime? alarmTime,
+    required DateTime currentTime,
+  }) async {
+    if (alarmTime != null &&
+        currentTime.hour == alarmTime.hour &&
+        currentTime.minute == alarmTime.minute &&
+        currentTime.second == 0) {
+      Future<void>.delayed(Duration.zero).then((_) => _displayAlarm(alarmTime: alarmTime));
+    }
+  }
+
+  void _displayAlarm({
+    required DateTime alarmTime,
+  }) {
+    debugPrint('Alarm!');
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Alarm!'),
+        content: Text('This is your ${DateFormat.Hm().format(alarmTime)} alarm.'),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // Only load these once
