@@ -4,32 +4,28 @@ import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:flutter_clock/alarm_preference.dart';
+import 'package:flutter_clock/clock_face_preference.dart';
+
 class ClockFace extends StatefulWidget {
-  final bool analog;
-
-  const ClockFace({
-    Key? key,
-    required this.analog,
-  }) : super(key: key);
-
   @override
   _ClockFaceState createState() => _ClockFaceState();
 }
 
 class _ClockFaceState extends State<ClockFace> {
   late Timer _timer;
-  late DateTime time;
 
   @override
   void initState() {
     super.initState();
-    time = DateTime.now();
 
     _timer = Timer.periodic(
       const Duration(seconds: 1),
-      (_) => setState(() => time = DateTime.now()),
+      (_) => context.read(timeProvider).state =
+          context.read(timeProvider).state.add(const Duration(seconds: 1)),
     );
   }
 
@@ -40,8 +36,49 @@ class _ClockFaceState extends State<ClockFace> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      widget.analog ? AnalogClockFace(timestamp: time) : DigitalClockFace(timestamp: time);
+  Widget build(BuildContext context) => Consumer(
+        builder: (context, watch, _) {
+          final time = watch(timeProvider).state;
+          final analogPreference = watch(clockFaceProvider);
+          final alarmPreference = watch(alarmProvider);
+          _testAlarm(alarmTime: alarmPreference, currentTime: time);
+
+          return analogPreference
+              ? AnalogClockFace(timestamp: time)
+              : DigitalClockFace(timestamp: time);
+        },
+      );
+
+  Future<void> _testAlarm({
+    required DateTime? alarmTime,
+    required DateTime currentTime,
+  }) async {
+    if (alarmTime != null &&
+        currentTime.hour == alarmTime.hour &&
+        currentTime.minute == alarmTime.minute &&
+        currentTime.second == 0) {
+      Future<void>.delayed(Duration.zero).then((_) => _displayAlarm(alarmTime: alarmTime));
+    }
+  }
+
+  void _displayAlarm({
+    required DateTime alarmTime,
+  }) {
+    debugPrint('Alarm!');
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Alarm!'),
+        content: Text('This is your ${DateFormat.Hm().format(alarmTime)} alarm.'),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // Only load these once
@@ -136,3 +173,5 @@ class DigitalClockFace extends StatelessWidget {
         ),
       );
 }
+
+final timeProvider = StateProvider<DateTime>((ref) => DateTime.now());

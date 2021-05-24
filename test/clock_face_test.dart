@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutter_clock/alarm_preference.dart';
+import 'package:flutter_clock/clock_face_preference.dart';
 import 'package:flutter_clock/clock_face.dart';
 
 void main() {
   group('Clock Face', () {
     testWidgets('Analog face is displayed', (WidgetTester tester) async {
-      await tester.pumpWidget(boilerplate(
-        child: const ClockFace(analog: true),
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          clockFaceProvider.overrideWithValue(ClockFacePreference()..analog = true),
+        ],
+        child: boilerplate(child: ClockFace()),
       ));
 
       expect(find.byType(AnalogClockFace), findsOneWidget);
@@ -16,8 +23,11 @@ void main() {
     });
 
     testWidgets('Digital face is displayed', (WidgetTester tester) async {
-      await tester.pumpWidget(boilerplate(
-        child: const ClockFace(analog: false),
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          clockFaceProvider.overrideWithValue(ClockFacePreference()..analog = false),
+        ],
+        child: boilerplate(child: ClockFace()),
       ));
 
       expect(find.byType(DigitalClockFace), findsOneWidget);
@@ -54,11 +64,7 @@ void main() {
   group('Digital Clock Face', () {
     testWidgets('08:09:10 is correctly displayed', (WidgetTester tester) async {
       final time1 = DateTime(1, 1, 1, 8, 9, 10);
-      await tester.pumpWidget(
-        boilerplate(
-          child: DigitalClockFace(timestamp: time1),
-        ),
-      );
+      await tester.pumpWidget(boilerplate(child: DigitalClockFace(timestamp: time1)));
 
       expect(find.text('08:09:10'), findsOneWidget);
 
@@ -91,6 +97,67 @@ void main() {
       expect(find.text('9:45:55'), findsNothing);
     });
   });
+
+  group(
+    'Alarms',
+    () {
+      testWidgets(
+        'No alarm if not set',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(ProviderScope(
+            overrides: [
+              alarmProvider.overrideWithValue(AlarmPreference()..setAlarm(alarm: null)),
+              timeProvider.overrideWithProvider(
+                  StateProvider<DateTime>((ref) => DateTime(1, 1, 1, 11, 22))),
+            ],
+            child: boilerplate(child: ClockFace()),
+          ));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsNothing);
+        },
+        skip: true,
+      );
+
+      testWidgets(
+        'No alarm at wrong tme',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(ProviderScope(
+            overrides: [
+              alarmProvider
+                  .overrideWithValue(AlarmPreference()..setAlarm(alarm: DateTime(1, 1, 1, 9, 33))),
+              timeProvider.overrideWithProvider(
+                  StateProvider<DateTime>((ref) => DateTime(1, 1, 1, 11, 22))),
+            ],
+            child: boilerplate(child: ClockFace()),
+          ));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsNothing);
+        },
+        skip: true,
+      );
+
+      testWidgets('Alarm at correct time', (WidgetTester tester) async {
+        await tester.pumpWidget(ProviderScope(
+          overrides: [
+            alarmProvider.overrideWithValue(
+              AlarmPreference()..setAlarm(alarm: DateTime(1, 1, 1, 11, 22)),
+            ),
+            timeProvider.overrideWithProvider(
+              StateProvider<DateTime>((ref) => DateTime(1, 1, 1, 11, 22)),
+            ),
+          ],
+          child: boilerplate(child: ClockFace()),
+        ));
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsNothing);
+      });
+    },
+    skip: true,
+  );
 }
 
 Widget boilerplate({required Widget child}) => MaterialApp(home: Scaffold(body: child));
