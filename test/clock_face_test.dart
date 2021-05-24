@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_clock/clock_face_preference.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_clock/clock_face.dart';
@@ -6,8 +8,11 @@ import 'package:flutter_clock/clock_face.dart';
 void main() {
   group('Clock Face', () {
     testWidgets('Analog face is displayed', (WidgetTester tester) async {
-      await tester.pumpWidget(boilerplate(
-        child: const ClockFace(analog: true),
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          clockFaceProvider.overrideWithValue(ClockFacePreference()..analog = true),
+        ],
+        child: boilerplate(child: ClockFace()),
       ));
 
       expect(find.byType(AnalogClockFace), findsOneWidget);
@@ -16,8 +21,11 @@ void main() {
     });
 
     testWidgets('Digital face is displayed', (WidgetTester tester) async {
-      await tester.pumpWidget(boilerplate(
-        child: const ClockFace(analog: false),
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          clockFaceProvider.overrideWithValue(ClockFacePreference()..analog = false),
+        ],
+        child: boilerplate(child: ClockFace()),
       ));
 
       expect(find.byType(DigitalClockFace), findsOneWidget);
@@ -54,11 +62,7 @@ void main() {
   group('Digital Clock Face', () {
     testWidgets('08:09:10 is correctly displayed', (WidgetTester tester) async {
       final time1 = DateTime(1, 1, 1, 8, 9, 10);
-      await tester.pumpWidget(
-        boilerplate(
-          child: DigitalClockFace(timestamp: time1),
-        ),
-      );
+      await tester.pumpWidget(boilerplate(child: DigitalClockFace(timestamp: time1)));
 
       expect(find.text('08:09:10'), findsOneWidget);
 

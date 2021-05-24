@@ -31,7 +31,7 @@ class ClockScreen extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: ClockFace(analog: analogFacePreference),
+          child: ClockFace(),
         ),
       ),
     );
